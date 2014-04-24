@@ -7,6 +7,7 @@
 			}
 		}),
 		ClientsCollection = Backbone.Collection.extend({
+			url: "/api/clients",
 			model: ClientModel
 		}),
 		ClientNewForm = Backbone.View.extend({
@@ -32,6 +33,7 @@
 					});
 
 				this.collection.add(m);
+				m.save();
 				uiName.val("");
 				uiLastName.val("");
 			},
@@ -84,6 +86,8 @@
 				el: "#list",
 				collection: clients
 			});
+
+		clients.fetch();
 		a.render();
 
 		clients.on("add",function(model){
