@@ -1,15 +1,15 @@
 (function(){
-	var MyView = Backbone.View.extend({
+	var ClientNewForm = Backbone.View.extend({
 
 		initialize: function(){
 
 		},
-		template: _.template("<h1><%=title%></h1> <button class=\"js-btnSave\">Save</button>"),
+		template: _.template('<h1>New Client</h1>Name: <input type="text" class="js-name"/> <br/>LastName:<input type="text" class="js-lastName"><br/><button class="js-btnSave">Save</button>'),
 		events: {
 			"click .js-btnSave": "save"
 		},
 		render: function() {
-			this.$el.html(this.template(this.model.attributes));
+			this.$el.html(this.template());
 			return this;
 		},
 		save: function(){
@@ -18,11 +18,8 @@
 
 	});
 
-	var a = new MyView({
-		el: "#app",
-		model: new Backbone.Model({
-			title: "hola"
-		})
+	var a = new ClientNewForm({
+		el: "#app"
 	});
 
 	a.render();
