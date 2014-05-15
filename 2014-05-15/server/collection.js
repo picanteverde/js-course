@@ -1,25 +1,27 @@
-module.exports = function(app){
-	var collection = [
-			{
-				name: "ale",
-				lastName: "hernandez"
+module.exports = {
+	collection: function(){
+		var collection = [
+				{
+					name: "ale",
+					lastName: "hernandez"
+				},
+				{
+					name: "julio",
+					lastName: "szabo"
+				},
+				{
+					name: "rama",
+					lastName: "palacios"
+				}
+			];
+		return {
+			read: function(req,res){
+				res.setHeader('Content-Type', 'application/json');
+				res.end(JSON.stringify(collection));
 			},
-			{
-				name: "julio",
-				lastName: "szabo"
-			},
-			{
-				name: "rama",
-				lastName: "palacios"
+			create: function(req,res){
+				collection.push(req.body);
 			}
-		];
-
-	app.get('/api/clients',function(req,res){
-		res.setHeader('Content-Type', 'application/json');
-		res.end(JSON.stringify(collection));
-	});
-
-	app.post('/api/clients', function(req,res){
-		collection.push(req.body);
-	});
+		};
+	}
 };
