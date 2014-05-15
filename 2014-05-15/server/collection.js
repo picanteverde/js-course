@@ -1,26 +1,12 @@
 module.exports = {
-	collection: function(){
-		var collection = [
-				{
-					name: "ale",
-					lastName: "hernandez"
-				},
-				{
-					name: "julio",
-					lastName: "szabo"
-				},
-				{
-					name: "rama",
-					lastName: "palacios"
-				}
-			];
+	collection: function(coll){
 		return {
 			read: function(req,res){
 				res.setHeader('Content-Type', 'application/json');
-				res.end(JSON.stringify(collection));
+				res.end(JSON.stringify(coll));
 			},
 			create: function(req,res){
-				collection.push(req.body);
+				coll.push(req.body);
 			}
 		};
 	}
