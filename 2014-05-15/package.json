@@ -1,0 +1,11 @@
+{
+  "name": "test1",
+  "version": "0.0.1",
+  "author": "Picanteverde <picanteverde@gmail.com>",
+  "description": "a simple description",
+  "dependencies": {
+    "express": "~4.2.0",
+    "body-parser": "~1.2.0"
+  },
+  "license": "MIT"
+}
