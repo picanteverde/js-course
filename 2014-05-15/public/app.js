@@ -1,17 +1,36 @@
 (function(){
-	var ClientModel = Backbone.Model.extend({
+var ClientModel = Backbone.Model.extend({
 			validate: function(attr, options){
 				if(!attr.name){
 					alert("Name is empty!");
 				}
 			}
 		}),
-		ClientsCollection = Backbone.Collection.extend({
-			url: "/api/clients",
-			model: ClientModel
-		}),
-		ClientNewForm = Backbone.View.extend({
-			initialize: function(options){
+	ClientsCollection = Backbone.Collection.extend({
+		url: "/api/clients",
+		model: ClientModel
+	}),
+	Menu = Backbone.Marionette.ItemView.extend({
+		template: function(){
+			return "<ul><li class=\"js-list\">list</li><li class=\"js-form\">form</li></ul>";
+		},
+		initialize: function(options){
+			this.delegate = options.delegate;
+		},
+		events: {
+			"click .js-list": "loadList",
+			"click .js-form": "loadForm"
+		},
+		loadList: function(){
+			this.delegate.load('list');
+		},
+		loadForm: function(){
+			this.delegate.load('form');
+		}
+
+	}),
+	FormView = Backbone.Marionette.ItemView.extend({
+		initialize: function(options){
 				this.collection = options.collection;
 			},
 			template: _.template('<h1>New Client</h1>Name: <input type="text" class="js-name"/> <br/>LastName:<input type="text" class="js-lastName"><br/><button class="js-btnSave">Save</button>'),
@@ -48,55 +67,65 @@
 					this.$el.find(".js-name").focus();
 				}
 			}
-
-		}),
-		ClientView = Backbone.View.extend({
-			tagName: "div",
-			template: _.template('<span ><%=name%></span> <span><%=lastName%></span>'),
-			render: function(){
-				this.$el.html(this.template(this.model.attributes));
-				return this;
-			}
-		}),
-		ClientListView = Backbone.View.extend({
-			initialize: function(options){
-				this.collection = options.collection;
-			},
-
-			render: function(){
-				var that = this;
-				this.$el.empty();
-				this.collection.forEach(function(model){
-					that.$el.append(new ClientView({
-						model: model
-					}).render().el);
-				});
-				return this;
-			}
-		});
-
-	
-	function init(){
-		var clients = new ClientsCollection(),
-			a = new ClientNewForm({
-				el: "#newForm",
-				collection: clients
-			}),
-			list = new ClientListView({
-				el: "#list",
-				collection: clients
+	}),
+	ClientView = Backbone.Marionette.ItemView.extend({
+		initialize: function(){
+			var a =1;
+		},
+		template: _.template('<span ><%=name%></span> <span><%=lastName%></span>')
+	}),
+	ClientsView = Backbone.Marionette.CollectionView.extend({
+		itemView: ClientView
+	}),
+	MainLayout = Backbone.Marionette.Layout.extend({
+		template: function(){
+			return '<div class="header"></div><div class="sidebar"></div><div class="content"></div>';
+		},
+		regions:{
+			header: ".header",
+			sidebar: ".sidebar",
+			content: ".content"
+		},
+		initialize: function(options){
+			this.collection = options.collection;
+			this.menuView = new Menu({
+				delegate: this
 			});
+		},
+		onShow: function(){
+			this.sidebar.show(this.menuView);
+		},
+		load: function(view){
+			switch(view){
+				case "form":
+					this.content.show(new FormView({
+						collection: this.collection
+					}));
+					break;
+				case "list":
+					this.content.show(new ClientsView({
+						collection: this.collection
+					}))
+					break;
+			}
+		}
+	}),
+	app = new Backbone.Marionette.Application();
 
-		clients.fetch();
-		a.render();
+app.addRegions({
+	"mainRegion": "#app"
+});
 
-		clients.on("add",function(model){
-			list.render();
+app.addInitializer(function(){
+	var clients = new ClientsCollection(),
+		layout = new MainLayout({
+			collection: clients
 		});
-	}
+	clients.fetch();
+	this.mainRegion.show(layout);
+});
+
+app.start();
 
 
-	init();
-
-	
 }());
